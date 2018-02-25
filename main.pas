@@ -1,5 +1,14 @@
 unit Main;
 
+ { Updater is a small software to automate the process of update
+ your Ultibo programs into a raspberry PI
+
+  Copyright (C) 2018 Jorge Turiel jorge.turiel@gmail.com
+
+  This code is release under Creative Common Attribution-ShareAlike 4.0 licence
+
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -7,7 +16,7 @@ interface
 uses
   SysUtils, Forms, Controls, Dialogs, ExtCtrls, StdCtrls, EditBtn,
   XMLPropStorage, ComCtrls, ActnList, IdTelnet, IdIPWatch, IdGlobal,
-  IdComponent, IdStack, Classes;
+  IdComponent, IdStack, Classes, FileUtil;
 
 type
 
@@ -73,11 +82,15 @@ implementation
 
 procedure TUpdaterFrm.acConnectExecute(Sender: TObject);
 begin
+
   IdTelnet1.Host := edHost.Text;
   try
     try
       if not IdTelnet1.Connected then
-        IdTelnet1.Connect
+      begin
+        mnMessages.Lines.Clear;
+        IdTelnet1.Connect;
+      end
       else
         IdTelnet1.Disconnect(False);
     except
@@ -105,7 +118,19 @@ begin
 end;
 
 procedure TUpdaterFrm.acUpdateExecute(Sender: TObject);
+var
+  Nombre: RawByteString;
+  Destino: TCaption;
+  Copiar: boolean;
 begin
+  Nombre := ExtractFileName(KernelName.Text);
+  Destino := DirServer.Text + PathDelim + Nombre;
+  Copiar := CopyFile(KernelName.Text, Destino, [cffOverwriteFile]);
+  if not Copiar then
+  begin
+    mnMessages.Lines.Add('Can not copy file!');
+    Exit;
+  end;
   SendData('update get all /r');
 end;
 
@@ -182,9 +207,16 @@ end;
 procedure TUpdaterFrm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   try
-    if IdTelnet1.Connected then
-    begin
-      IdTelnet1.Disconnect(False);
+    try
+      if IdTelnet1.Connected then
+      begin
+        IdTelnet1.Disconnect(False);
+      end;
+    except
+      on E: EIdSocketError do
+      begin
+        CloseAction := caFree;
+      end;
     end;
   finally
     CloseAction := caFree;
@@ -214,7 +246,6 @@ begin
       Cadena := Cadena + char(Buffer[I]);
     end;
   end;
-  // mnMessages.Lines.Add(Cadena);
   mnMessages.Lines.AddText(Cadena);
   mnMessages.SelStart := Length(mnMessages.Text);
 
