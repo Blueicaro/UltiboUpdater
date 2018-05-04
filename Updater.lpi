@@ -86,7 +86,7 @@
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="C:\Users\Jorge\Documents\Lazarus\Ultibo-Updater\V2"/>
+      <DestinationDirectory Value="C:\Users\Jorge\Documents\Lazarus\Ultibo-Updater\V4"/>
     </PublishOptions>
     <RunParams>
       <local>
@@ -104,7 +104,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="4">
       <Unit0>
         <Filename Value="Updater.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -117,6 +117,22 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="options.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsFrm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Options"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="updatefirmware.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FirmWareForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UpdateFirmware"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

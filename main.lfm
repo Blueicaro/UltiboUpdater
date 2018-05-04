@@ -1,12 +1,12 @@
 object UpdaterFrm: TUpdaterFrm
-  Left = 375
+  Left = 739
   Height = 585
-  Top = 132
+  Top = 125
   Width = 485
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'Updater v0.2'
-  ClientHeight = 585
+  Caption = 'Updater v0.4'
+  ClientHeight = 565
   ClientWidth = 485
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
@@ -2125,11 +2125,14 @@ object UpdaterFrm: TUpdaterFrm
     0000000000000000000000000000000000000000000000000000000000000000
     0000
   }
+  Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
   Position = poDesktopCenter
   SessionProperties = 'DirServer.Text;edHost.Text;KernelName.Text;edWebServerIp.Text'
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.8.2.0'
   object Panel1: TPanel
     Left = 0
     Height = 144
@@ -2140,7 +2143,7 @@ object UpdaterFrm: TUpdaterFrm
     ClientWidth = 485
     TabOrder = 0
     object btUpdate: TButton
-      Left = 144
+      Left = 192
       Height = 25
       Top = 104
       Width = 88
@@ -2209,6 +2212,7 @@ object UpdaterFrm: TUpdaterFrm
       Top = 32
       Width = 280
       FileName = 'KernelName'
+      Filter = 'KernelFiles|*.img|All files|*.*'
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
@@ -2221,7 +2225,7 @@ object UpdaterFrm: TUpdaterFrm
       Text = 'KernelName'
     end
     object btUpdateServer: TButton
-      Left = 248
+      Left = 320
       Height = 25
       Top = 104
       Width = 107
@@ -2249,31 +2253,22 @@ object UpdaterFrm: TUpdaterFrm
       Caption = 'WebServer address'
       ParentColor = False
     end
-    object btIpWebServer: TButton
-      Left = 376
-      Height = 25
-      Top = 104
-      Width = 96
-      Action = acUpdateCmdLine
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 6
-    end
     object btConnect: TButton
-      Left = 16
+      Left = 48
       Height = 25
       Top = 104
       Width = 107
       Action = acConnect
-      TabOrder = 7
+      TabOrder = 6
     end
   end
   object mnMessages: TMemo
     Left = 0
-    Height = 418
+    Height = 398
     Top = 144
     Width = 485
     Align = alClient
+    OnChange = mnMessagesChange
     ReadOnly = True
     ScrollBars = ssAutoBoth
     TabOrder = 1
@@ -2282,7 +2277,7 @@ object UpdaterFrm: TUpdaterFrm
     Left = 0
     Height = 23
     Hint = 'Ip of WebServer'#13#10'Double Click to get Ip of this pc'
-    Top = 562
+    Top = 542
     Width = 485
     Panels = <    
       item
@@ -2300,11 +2295,16 @@ object UpdaterFrm: TUpdaterFrm
     top = 176
   end
   object XMLPropStorage1: TXMLPropStorage
-    StoredValues = <>
+    StoredValues = <    
+      item
+        Name = 'FirmWareFolder'
+        OnSave = XMLPropStorage1StoredValues0Save
+        OnRestore = XMLPropStorage1StoredValues0Restore
+      end>
     FileName = 'config.xml'
     RootNodePath = 'Data'
     left = 192
-    top = 170
+    top = 168
   end
   object IdIPWatch1: TIdIPWatch
     Active = True
@@ -2314,23 +2314,117 @@ object UpdaterFrm: TUpdaterFrm
     top = 170
   end
   object ActionList1: TActionList
-    left = 239
-    top = 370
+    left = 240
+    top = 376
     object acForceIpServer: TAction
+      Category = 'Comands'
       Caption = 'Force Ip Server'
       OnExecute = acForceIpServerExecute
     end
     object acUpdate: TAction
+      Category = 'Comands'
       Caption = 'Update'
       OnExecute = acUpdateExecute
     end
     object acUpdateCmdLine: TAction
+      Category = 'Comands'
       Caption = 'Update CmdLine'
       OnExecute = acUpdateCmdLineExecute
     end
     object acConnect: TAction
+      Category = 'Comands'
       Caption = 'Connect'
       OnExecute = acConnectExecute
     end
+    object acLoadProfile: TAction
+      Category = 'File'
+      Caption = 'Load Profile'
+    end
+    object acSaveProfile: TAction
+      Category = 'File'
+      Caption = 'Save Profile'
+    end
+    object acSendFile: TAction
+      Category = 'Comands'
+      Caption = 'Send a File'
+      OnExecute = acSendFileExecute
+    end
+    object acReboot: TAction
+      Category = 'Comands'
+      Caption = 'Reboot'
+      OnExecute = acRebootExecute
+    end
+    object acAnyCommand: TAction
+      Category = 'Comands'
+      Caption = 'Type command'
+      OnExecute = acAnyCommandExecute
+    end
+    object acExit: TAction
+      Category = 'File'
+      Caption = 'Exit'
+      OnExecute = acExitExecute
+    end
+    object acFirmwareUpdate: TAction
+      Category = 'Comands'
+      Caption = 'Kernel Update'
+      OnExecute = acFirmwareUpdateExecute
+    end
+    object acOptions: TAction
+      Category = 'Tools'
+      Caption = 'Options'
+      OnExecute = acOptionsExecute
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 112
+    top = 309
+    object MenuItem1: TMenuItem
+      Caption = 'File'
+      OnClick = MenuItem1Click
+      object MenuItem2: TMenuItem
+        Action = acConnect
+      end
+      object MenuItem4: TMenuItem
+        Action = acLoadProfile
+      end
+      object MenuItem9: TMenuItem
+        Action = acSaveProfile
+      end
+      object MenuItem5: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem6: TMenuItem
+        Action = acExit
+      end
+    end
+    object mnComandos: TMenuItem
+      Caption = 'Comands'
+      object MenuItem3: TMenuItem
+        Action = acUpdate
+      end
+      object MenuItem14: TMenuItem
+        Action = acFirmwareUpdate
+      end
+      object MenuItem7: TMenuItem
+        Action = acForceIpServer
+      end
+      object MenuItem11: TMenuItem
+        Action = acReboot
+      end
+      object MenuItem10: TMenuItem
+        Action = acAnyCommand
+      end
+    end
+    object MenuItem12: TMenuItem
+      Caption = 'Tools'
+      object MenuItem13: TMenuItem
+        Action = acOptions
+      end
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
+    left = 149
+    top = 252
   end
 end
